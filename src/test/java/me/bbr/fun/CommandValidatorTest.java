@@ -41,6 +41,18 @@ public class CommandValidatorTest {
     }
 
     @Test
+    public void should_not_valid_with_bad_compilation () throws NoSuchMethodException {
+        // Given
+        Method methodA = ExperimentClass.class.getMethod("methodA", String.class, String.class);
+
+        // When
+        boolean valid = CommandValidator.isValid("^ With two (*.) $");
+
+        // Then
+        assertThat(valid).isFalse();
+    }
+
+    @Test
     public void should_not_valid_with_different_size_of_argument () throws NoSuchMethodException {
         // Given
         Method methodA = ExperimentClass.class.getMethod("methodA", String.class, String.class);

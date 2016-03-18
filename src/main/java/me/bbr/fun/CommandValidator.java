@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class CommandValidator {
 
@@ -17,7 +18,22 @@ public class CommandValidator {
     private static Pattern pattern = Pattern.compile(REGEX);
 
     public static boolean isValid(String patternToValidate) {
+        if (patternSyntaxIsNotValid(patternToValidate)) {
+            return false;
+        }
+
         return pattern.matcher(patternToValidate).find();
+    }
+
+    private static boolean patternSyntaxIsNotValid(String patternToValidate) {
+        try {
+            Pattern.compile(patternToValidate);
+        }
+        catch (PatternSyntaxException e) {
+            LOG.warn("PatternSyntaxException : " + e.getMessage());
+            return true;
+        }
+        return false;
     }
 
     public static int countGroup(String patternToCount) {

@@ -63,7 +63,7 @@ public class CommandBeanScanner {
                     ) {
                 addSpec((CommandSpec) annotation, beanName, type, method);
 
-                LOG.info("Bean : " +  beanName + "." + method.getName() + "is valid");
+                LOG.info("Bean : " +  beanName + "." + method.getName() + "is added");
             }
             else {
                 LOG.warn("Bean : " + beanName + "." + method.getName()
@@ -73,11 +73,6 @@ public class CommandBeanScanner {
     }
 
     private void addSpec(CommandSpec commandSpec, String beanName, Class type, Method method) {
-        try {
-            commandBeanMethods.add(new CommandBeanMethod(commandSpec.value(), method, beanName, type));
-        }
-        catch (PatternSyntaxException e) {
-            LOG.warn("PatternSyntaxException for " + beanName + " (" + type + "), command " +  commandSpec.value(), e);
-        }
+        commandBeanMethods.add(new CommandBeanMethod(commandSpec.value(), method, beanName, type));
     }
 }

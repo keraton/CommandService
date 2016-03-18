@@ -69,8 +69,6 @@ public class CommandService {
         return argumentsWithContext;
     }
 
-
-
     private Object getBean(CommandBeanMethod commandBeanMethod) {
         String beanName = commandBeanMethod.getBeanName();
         Class type = commandBeanMethod.getType();
