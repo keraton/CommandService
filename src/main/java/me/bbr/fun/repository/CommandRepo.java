@@ -1,6 +1,6 @@
 package me.bbr.fun.repository;
 
-import me.bbr.fun.spring.CommandBeanMethod;
+import me.bbr.fun.dto.CommandBeanMethod;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

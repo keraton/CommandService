@@ -1,8 +1,8 @@
-package me.bbr.fun.spring;
+package me.bbr.fun;
 
+import me.bbr.fun.dto.CommandBeanMethod;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.util.regex.PatternSyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;

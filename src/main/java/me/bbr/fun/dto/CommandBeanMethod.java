@@ -1,4 +1,4 @@
-package me.bbr.fun.spring;
+package me.bbr.fun.dto;
 
 import me.bbr.fun.CommandContext;
 import me.bbr.fun.annotation.Context;
@@ -74,6 +74,16 @@ public class CommandBeanMethod {
         }
 
         return groups;
+    }
+
+    public boolean isContainsCommandContext() {
+        Class<?>[] types = method.getParameterTypes();
+        for(Class clazz : types) {
+            if (clazz == CommandContext.class) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

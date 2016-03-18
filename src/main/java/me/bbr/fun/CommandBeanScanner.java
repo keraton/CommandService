@@ -1,6 +1,7 @@
-package me.bbr.fun.spring;
+package me.bbr.fun;
 
 import me.bbr.fun.annotation.CommandSpec;
+import me.bbr.fun.dto.CommandBeanMethod;
 import me.bbr.fun.repository.CommandRepo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,11 +29,7 @@ public class CommandBeanScanner {
     @Autowired
     private CommandRepo commandRepo;
 
-    private List<CommandBeanMethod> commandBeanMethods = new ArrayList<>();
-
-    public List<CommandBeanMethod> getCommandBeanMethods() {
-        return commandBeanMethods;
-    }
+    List<CommandBeanMethod> commandBeanMethods = new ArrayList<>();
 
     @PostConstruct
     public void scan() {
@@ -58,23 +55,21 @@ public class CommandBeanScanner {
     private void scan(Method method, String beanName, Class type) {
         Annotation[] annotations = method.getDeclaredAnnotations();
         for (Annotation annotation: annotations) {
-            if (annotation instanceof CommandSpec && isValid(method)) {
+            LOG.info("Check validity on : " +  beanName + "." + method.getName());
+            if (annotation instanceof CommandSpec
+                    && CommandValidator.isValid(method)
+                    && CommandValidator.isValid((CommandSpec) annotation)
+                    && CommandValidator.isValid(method, ((CommandSpec) annotation).value())
+                    ) {
                 addSpec((CommandSpec) annotation, beanName, type, method);
+
+                LOG.info("Bean : " +  beanName + "." + method.getName() + "is valid");
+            }
+            else {
+                LOG.warn("Bean : " + beanName + "." + method.getName()
+                        + " is not valid, please check on the warning");
             }
         }
-    }
-
-    private boolean isValid(Method method) {
-        if (method.getReturnType() == null) {
-            LOG.warn("Method invalid, cannot be void");
-            return false;
-        }
-        if (!method.getReturnType().equals(String.class)) {
-            LOG.warn("Method invalid, return type is not String");
-            return false;
-        }
-
-        return true;
     }
 
     private void addSpec(CommandSpec commandSpec, String beanName, Class type, Method method) {

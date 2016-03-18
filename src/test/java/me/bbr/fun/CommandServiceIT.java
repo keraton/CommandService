@@ -1,11 +1,10 @@
-package me.bbr.fun.spring;
+package me.bbr.fun;
 
 
-import me.bbr.fun.CommandContext;
-import me.bbr.fun.CommandService;
 import me.bbr.fun.annotation.CommandSpec;
 import me.bbr.fun.annotation.Context;
 import me.bbr.fun.config.CommandAppConfig;
+import me.bbr.fun.dto.CommandBeanMethod;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class CommandServiceIT {
     @Test
     public void should_scan () {
         // Given
-        List<CommandBeanMethod> commandBeanMethods = scanner.getCommandBeanMethods();
+        List<CommandBeanMethod> commandBeanMethods = scanner.commandBeanMethods;
 
         // Then
         assertThat(commandBeanMethods).hasSize(3);
