@@ -1,7 +1,7 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
-import me.bbr.fun.repository.CommandRepo;
-import me.bbr.fun.dto.CommandBeanMethod;
+import me.bbr.easycommand.repository.CommandRepo;
+import me.bbr.easycommand.dto.CommandBeanMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CommandService {
+public class EasyCommand {
 
-    private static Log LOG = LogFactory.getLog(CommandService.class);
+    private static Log LOG = LogFactory.getLog(EasyCommand.class);
 
     @Autowired
     private ApplicationContext ctx;

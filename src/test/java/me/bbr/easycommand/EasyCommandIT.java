@@ -1,10 +1,10 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
 
-import me.bbr.fun.annotation.CommandSpec;
-import me.bbr.fun.annotation.Context;
-import me.bbr.fun.config.CommandAppConfig;
-import me.bbr.fun.dto.CommandBeanMethod;
+import me.bbr.easycommand.annotation.Command;
+import me.bbr.easycommand.annotation.Context;
+import me.bbr.easycommand.config.CommandAppConfig;
+import me.bbr.easycommand.dto.CommandBeanMethod;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration()
-public class CommandServiceIT {
+public class EasyCommandIT {
 
     @Autowired
     private CommandBeanScanner scanner;
 
     @Autowired
-    private CommandService commandService;
+    private EasyCommand easyCommand;
 
     @Test
     public void should_scan () {
@@ -41,7 +41,7 @@ public class CommandServiceIT {
 
     @Test
     public void should_service () {
-        String result = commandService.execute("I love Paris and London");
+        String result = easyCommand.execute("I love Paris and London");
 
         assertThat(result).isEqualTo("Paris" + "London");
     }
@@ -51,7 +51,7 @@ public class CommandServiceIT {
         Map<String, String> map = new HashMap<>();
         map.put("key1", "value1");
 
-        String result = commandService.execute("I love Paris too", new CommandContext(map));
+        String result = easyCommand.execute("I love Paris too", new CommandContext(map));
 
         assertThat(result).isEqualTo("Paris" + "value1");
     }
@@ -61,7 +61,7 @@ public class CommandServiceIT {
         Map<String, String> map = new HashMap<>();
         map.put("key1", "value1");
 
-        String result = commandService.execute("I love Paris again", new CommandContext(map));
+        String result = easyCommand.execute("I love Paris again", new CommandContext(map));
 
         assertThat(result).isEqualTo("Paris" + "value1");
     }
@@ -71,27 +71,27 @@ public class CommandServiceIT {
         /**
          * WARNING : there is no possibility to check the size of the arguments
          */
-        @CommandSpec("^I love (\\w*) and (\\w*)$")
+        @Command("^I love (\\w*) and (\\w*)$")
         public String command(String text, String text2) {
             return text + text2;
         }
 
-        @CommandSpec("^I love (\\w*) too$")
+        @Command("^I love (\\w*) too$")
         public String commandWithContext(String text, CommandContext commandContext) {
             return text + commandContext.getHeader().get("key1");
         }
 
-        @CommandSpec("^I love (\\w*) again$")
+        @Command("^I love (\\w*) again$")
         public String commandWithContextAnnotation(String text, @Context("key1") String value) {
             return text + value;
         }
 
-        @CommandSpec("^I love (.*)$")
+        @Command("^I love (.*)$")
         public Object command_invalid_1 (String text) {
             return text;
         }
 
-        @CommandSpec("^I love (.*)$")
+        @Command("^I love (.*)$")
         public void command_invalid_2 (String text) {
         }
 

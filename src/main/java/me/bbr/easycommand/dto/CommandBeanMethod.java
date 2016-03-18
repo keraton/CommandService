@@ -1,7 +1,7 @@
-package me.bbr.fun.dto;
+package me.bbr.easycommand.dto;
 
-import me.bbr.fun.CommandContext;
-import me.bbr.fun.annotation.Context;
+import me.bbr.easycommand.CommandContext;
+import me.bbr.easycommand.annotation.Context;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

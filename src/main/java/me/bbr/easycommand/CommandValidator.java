@@ -1,7 +1,7 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
-import me.bbr.fun.annotation.CommandSpec;
-import me.bbr.fun.annotation.Context;
+import me.bbr.easycommand.annotation.Command;
+import me.bbr.easycommand.annotation.Context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -130,7 +130,7 @@ public class CommandValidator {
         return true;
     }
 
-    public static boolean isValid(CommandSpec annotation) {
+    public static boolean isValid(Command annotation) {
         if (!isValid(annotation.value())) {
             LOG.warn("Pattern is invalid : correct pattern is " + REGEX);
             return false;

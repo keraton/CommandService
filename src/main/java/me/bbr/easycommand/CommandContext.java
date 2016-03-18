@@ -1,4 +1,4 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
 import java.util.Collections;
 import java.util.Map;

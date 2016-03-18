@@ -1,6 +1,6 @@
-package me.bbr.fun.repository;
+package me.bbr.easycommand.repository;
 
-import me.bbr.fun.dto.CommandBeanMethod;
+import me.bbr.easycommand.dto.CommandBeanMethod;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
-import me.bbr.fun.annotation.CommandSpec;
-import me.bbr.fun.dto.CommandBeanMethod;
-import me.bbr.fun.repository.CommandRepo;
+import me.bbr.easycommand.annotation.Command;
+import me.bbr.easycommand.dto.CommandBeanMethod;
+import me.bbr.easycommand.repository.CommandRepo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 @Component
 public class CommandBeanScanner {
@@ -56,12 +55,12 @@ public class CommandBeanScanner {
         Annotation[] annotations = method.getDeclaredAnnotations();
         for (Annotation annotation: annotations) {
             LOG.info("Check validity on : " +  beanName + "." + method.getName());
-            if (annotation instanceof CommandSpec
+            if (annotation instanceof Command
                     && CommandValidator.isValid(method)
-                    && CommandValidator.isValid((CommandSpec) annotation)
-                    && CommandValidator.isValid(method, ((CommandSpec) annotation).value())
+                    && CommandValidator.isValid((Command) annotation)
+                    && CommandValidator.isValid(method, ((Command) annotation).value())
                     ) {
-                addSpec((CommandSpec) annotation, beanName, type, method);
+                addSpec((Command) annotation, beanName, type, method);
 
                 LOG.info("Bean : " +  beanName + "." + method.getName() + "is added");
             }
@@ -72,7 +71,7 @@ public class CommandBeanScanner {
         }
     }
 
-    private void addSpec(CommandSpec commandSpec, String beanName, Class type, Method method) {
-        commandBeanMethods.add(new CommandBeanMethod(commandSpec.value(), method, beanName, type));
+    private void addSpec(Command command, String beanName, Class type, Method method) {
+        commandBeanMethods.add(new CommandBeanMethod(command.value(), method, beanName, type));
     }
 }

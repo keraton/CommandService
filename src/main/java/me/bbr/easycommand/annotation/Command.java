@@ -1,4 +1,4 @@
-package me.bbr.fun.annotation;
+package me.bbr.easycommand.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,8 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface Context {
+@Target(ElementType.METHOD)
+public @interface Command {
 
     String value();
+
 }

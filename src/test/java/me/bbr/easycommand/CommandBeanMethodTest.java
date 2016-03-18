@@ -1,6 +1,6 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
-import me.bbr.fun.dto.CommandBeanMethod;
+import me.bbr.easycommand.dto.CommandBeanMethod;
 import org.junit.Test;
 
 import java.util.regex.PatternSyntaxException;

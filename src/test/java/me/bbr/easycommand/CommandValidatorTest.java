@@ -1,6 +1,6 @@
-package me.bbr.fun;
+package me.bbr.easycommand;
 
-import me.bbr.fun.annotation.Context;
+import me.bbr.easycommand.annotation.Context;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
