@@ -43,7 +43,30 @@ public class TypeExtractor {
         Pattern pattern = Pattern.compile(commandBeanMethod.getCommand());
 
         List<Object> groups = new ArrayList<>();
+
+        groups.addAll(extractFromPattern(commandBeanMethod, text, pattern));
+        groups.addAll(extractFromContext(commandBeanMethod, commandContext));
+
+        return groups;
+    }
+
+    private List<Object> extractFromContext(CommandBeanMethod commandBeanMethod, CommandContext commandContext) {
+        List<Object> groups = new ArrayList<>();
+        Annotation[][] annotationParam = commandBeanMethod.getMethod().getParameterAnnotations();
+        for (Annotation[] ann : annotationParam) {
+            for (Annotation an : ann) {
+                if (an instanceof Context) {
+                    Context context = (Context) an;
+                    groups.add(commandContext.getHeader().get(context.value()));
+                }
+            }
+        }
+        return groups;
+    }
+
+    private List<Object> extractFromPattern(CommandBeanMethod commandBeanMethod, String text, Pattern pattern) {
         List<Class> types = this.extract(commandBeanMethod.getCommand());
+        List<Object> groups = new ArrayList<>();
 
         Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
@@ -63,18 +86,6 @@ public class TypeExtractor {
                 }
             }
         }
-
-        // Need to add annotation
-        Annotation[][] annotationParam = commandBeanMethod.getMethod().getParameterAnnotations();
-        for (Annotation[] ann : annotationParam) {
-            for (Annotation an : ann) {
-                if (an instanceof Context) {
-                    Context context = (Context) an;
-                    groups.add(commandContext.getHeader().get(context.value()));
-                }
-            }
-        }
-
         return groups;
     }
 
