@@ -1,7 +1,7 @@
 package me.bbr.easycommand;
 
-import me.bbr.easycommand.repository.CommandRepo;
 import me.bbr.easycommand.dto.CommandBeanMethod;
+import me.bbr.easycommand.repository.CommandRepo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,9 @@ public class EasyCommand {
     @Autowired
     private CommandRepo commandRepo;
 
+    @Autowired
+    private TypeExtractor typeExtractor;
+
     public String execute(String text) {
         return execute(text, null);
     }
@@ -48,7 +51,7 @@ public class EasyCommand {
                             | InvocationTargetException
                             | IllegalArgumentException e) {
                     LOG.warn("Method invoke failed : ", e);
-                    result += "Usage : " + commandBeanMethod.getCommand();
+                    result = "Usage : " + commandBeanMethod.getCommand();
                 }
             }
         }
@@ -57,16 +60,13 @@ public class EasyCommand {
     }
 
     private List<Object> getArguments(String text, CommandContext commandContext, CommandBeanMethod commandBeanMethod) {
-        List<String> arguments = commandBeanMethod.extractArguments(text, commandContext);
-
-        List<Object> argumentsWithContext = new ArrayList<>();
-        argumentsWithContext.addAll(arguments);
+        List<Object> arguments = typeExtractor.extractArguments(commandBeanMethod, text, commandContext);
 
         if (commandBeanMethod.isContainsCommandContext()) {
-            argumentsWithContext.add(commandContext);
+            arguments.add(commandContext);
         }
 
-        return argumentsWithContext;
+        return arguments;
     }
 
     private Object getBean(CommandBeanMethod commandBeanMethod) {

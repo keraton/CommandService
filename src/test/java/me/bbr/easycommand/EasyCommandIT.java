@@ -41,9 +41,9 @@ public class EasyCommandIT {
 
     @Test
     public void should_service () {
-        String result = easyCommand.execute("I love Paris and London");
+        String result = easyCommand.execute("I love Paris and London and number 3");
 
-        assertThat(result).isEqualTo("Paris" + "London");
+        assertThat(result).isEqualTo("Paris" + "London" + 3);
     }
 
     @Test
@@ -68,12 +68,9 @@ public class EasyCommandIT {
 
     static class ClassWithCommand {
 
-        /**
-         * WARNING : there is no possibility to check the size of the arguments
-         */
-        @Command("^I love (\\w*) and (\\w*)$")
-        public String command(String text, String text2) {
-            return text + text2;
+        @Command("^I love (\\w+) and (\\w+) and number (\\d+)$")
+        public String command(String text, String text2, Integer integer) {
+            return text + text2 +integer;
         }
 
         @Command("^I love (\\w*) too$")

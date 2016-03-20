@@ -28,6 +28,9 @@ public class CommandBeanScanner {
     @Autowired
     private CommandRepo commandRepo;
 
+    @Autowired
+    private CommandValidator commandValidator;
+
     List<CommandBeanMethod> commandBeanMethods = new ArrayList<>();
 
     @PostConstruct
@@ -54,24 +57,25 @@ public class CommandBeanScanner {
     private void scan(Method method, String beanName, Class type) {
         Annotation[] annotations = method.getDeclaredAnnotations();
         for (Annotation annotation: annotations) {
-            LOG.info("Check validity on : " +  beanName + "." + method.getName());
-            if (annotation instanceof Command
-                    && CommandValidator.isValid(method)
-                    && CommandValidator.isValid((Command) annotation)
-                    && CommandValidator.isValid(method, ((Command) annotation).value())
-                    ) {
-                addSpec((Command) annotation, beanName, type, method);
+            if (annotation instanceof Command) {
+                LOG.info("Check validity on : " + beanName + "." + method.getName());
 
-                LOG.info("Bean : " +  beanName + "." + method.getName() + "is added");
-            }
-            else {
-                LOG.warn("Bean : " + beanName + "." + method.getName()
-                        + " is not valid, please check on the warning");
+                if (commandValidator.isValid(method)
+                        && commandValidator.isValid((Command) annotation)
+                        && commandValidator.isValid(method, ((Command) annotation).value())
+                        ) {
+                    addSpec((Command) annotation, method, beanName, type);
+
+                    LOG.info("Bean : " + beanName + "." + method.getName() + " is added");
+                } else {
+                    LOG.warn("Bean : " + beanName + "." + method.getName()
+                            + " is not valid, please check on the warning");
+                }
             }
         }
     }
 
-    private void addSpec(Command command, String beanName, Class type, Method method) {
+    private void addSpec(Command command, Method method, String beanName, Class type) {
         commandBeanMethods.add(new CommandBeanMethod(command.value(), method, beanName, type));
     }
 }

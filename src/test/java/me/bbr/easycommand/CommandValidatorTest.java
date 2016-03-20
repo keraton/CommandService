@@ -2,30 +2,41 @@ package me.bbr.easycommand;
 
 import me.bbr.easycommand.annotation.Context;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CommandValidatorTest {
+
+    @InjectMocks
+    private CommandValidator commandValidator = new CommandValidator();
+
+    @Spy
+    private TypeExtractor typeExtractor = new TypeExtractor();
 
     @Test
     public void should_count_only_one_group () {
         // Then
-        assertThat(CommandValidator.countGroup("Group one (\\w+)")).isEqualTo(1);
-        assertThat(CommandValidator.countGroup("Group two (\\w+) (\\w+)")).isEqualTo(2);
+        assertThat(commandValidator.countGroup("Group one (\\w+)")).isEqualTo(1);
+        assertThat(commandValidator.countGroup("Group two (\\w+) (\\w+)")).isEqualTo(2);
     }
 
     @Test
     public void should_match_only_one_line_pattern () {
         // Should start with ^ and end with $
-        assertThat(CommandValidator.isValid("^This should work$")).isTrue();
+        assertThat(commandValidator.isValid("^This should work$")).isTrue();
         // Should end with $
-        assertThat(CommandValidator.isValid("^This should not work")).isFalse();
+        assertThat(commandValidator.isValid("^This should not work")).isFalse();
         // Should start with ^
-        assertThat(CommandValidator.isValid("This should not work$")).isFalse();
+        assertThat(commandValidator.isValid("This should not work$")).isFalse();
         // Should stay one line
-        assertThat(CommandValidator.isValid("^This should not \n work$")).isFalse();
+        assertThat(commandValidator.isValid("^This should not \n work$")).isFalse();
     }
 
     @Test
@@ -34,7 +45,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodA", String.class, String.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ With two (\\w+) (\\w+) $");
+        boolean valid = commandValidator.isValid(methodA, "^ With two (\\w+) (\\w+) $");
 
         // Then
         assertThat(valid).isTrue();
@@ -46,7 +57,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodA", String.class, String.class);
 
         // When
-        boolean valid = CommandValidator.isValid("^ With two (*.) $");
+        boolean valid = commandValidator.isValid("^ With two (*.) $");
 
         // Then
         assertThat(valid).isFalse();
@@ -58,22 +69,22 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodA", String.class, String.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ With one (\\w+) $");
+        boolean valid = commandValidator.isValid(methodA, "^ With one (\\w+) $");
 
         // Then
         assertThat(valid).isFalse();
     }
 
     @Test
-    public void should_not_valid_with_int () throws NoSuchMethodException {
+    public void should_valid_with_int () throws NoSuchMethodException {
         // Given
-        Method methodA = ExperimentClass.class.getMethod("methodB", int.class, int.class);
+        Method methodA = ExperimentClass.class.getMethod("methodB", Integer.class, Integer.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ With two (\\w+) (\\w+) $");
+        boolean valid = commandValidator.isValid(methodA, "^ With two (\\d+) (\\d+) $");
 
         // Then
-        assertThat(valid).isFalse();
+        assertThat(valid).isTrue();
     }
 
     @Test
@@ -82,7 +93,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodC", CommandContext.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^This should be enough$");
+        boolean valid = commandValidator.isValid(methodA, "^This should be enough$");
 
         // Then
         assertThat(valid).isTrue();
@@ -94,7 +105,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodD", CommandContext.class, String.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^(\\w+)$");
+        boolean valid = commandValidator.isValid(methodA, "^(\\w+)$");
 
         // Then
         assertThat(valid).isFalse();
@@ -106,7 +117,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodF", String.class, CommandContext.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^(\\w+)$");
+        boolean valid = commandValidator.isValid(methodA, "^(\\w+)$");
 
         // Then
         assertThat(valid).isTrue();
@@ -118,7 +129,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodE", CommandContext.class, CommandContext.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ $");
+        boolean valid = commandValidator.isValid(methodA, "^ $");
 
         // Then
         assertThat(valid).isFalse();
@@ -130,7 +141,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodG", String.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ $");
+        boolean valid = commandValidator.isValid(methodA, "^ $");
 
         // Then
         assertThat(valid).isTrue();
@@ -142,7 +153,7 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodH", String.class, String.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ (\\w+) $");
+        boolean valid = commandValidator.isValid(methodA, "^ (\\w+) $");
 
         // Then
         assertThat(valid).isTrue();
@@ -154,10 +165,22 @@ public class CommandValidatorTest {
         Method methodA = ExperimentClass.class.getMethod("methodI", String.class, String.class);
 
         // When
-        boolean valid = CommandValidator.isValid(methodA, "^ (\\w+) $");
+        boolean valid = commandValidator.isValid(methodA, "^ (\\w+) $");
 
         // Then
         assertThat(valid).isFalse();
+    }
+
+    @Test
+    public void should_valid_with_double () throws NoSuchMethodException {
+        // Given
+        Method methodA = ExperimentClass.class.getMethod("methodJ", Double.class, Integer.class);
+
+        // When
+        boolean valid = commandValidator.isValid(methodA, "^ (\\d+\\.\\d+) (\\d+) $");
+
+        // Then
+        assertThat(valid).isTrue();
     }
 
     // This is a very cool experiment class
@@ -165,13 +188,14 @@ public class CommandValidatorTest {
 
         // Valid
         public void methodA(String s1, String s2) {};
+        public void methodB(Integer s1, Integer s2) {};
         public void methodC(CommandContext commandContext) {};
         public void methodF(String s1, CommandContext commandContext) {};
         public void methodG(@Context("key1") String s1) {};
         public void methodH(String s1, @Context("key1") String s2) {};
+        public void methodJ(Double s1, Integer s2) {};
 
         // Not Valid
-        public void methodB(int s1, int s2) {};
         public void methodD(CommandContext commandContext, String s1) {};
         public void methodE(CommandContext commandContext, CommandContext commandContext2) {};
         public void methodI( @Context("key1") String s1, String s2) {};

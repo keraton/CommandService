@@ -49,32 +49,6 @@ public class CommandBeanMethod {
         return matcher.matches();
     }
 
-    public List<String> extractArguments(String text, CommandContext commandContext) {
-        List<String> groups = new ArrayList<>();
-
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.matches()) {
-            // No need to take the 1st match
-            for(int i=1; i <= matcher.groupCount(); i++) {
-                groups.add(matcher.group(i));
-            }
-        }
-
-        // Need to add annotation
-        if (method != null) {
-            Annotation[][] annotationParam = this.method.getParameterAnnotations();
-            for (Annotation[] ann : annotationParam) {
-                for (Annotation an : ann) {
-                    if (an instanceof Context) {
-                        Context context = (Context) an;
-                        groups.add(commandContext.getHeader().get(context.value()));
-                    }
-                }
-            }
-        }
-
-        return groups;
-    }
 
     public boolean isContainsCommandContext() {
         Class<?>[] types = method.getParameterTypes();

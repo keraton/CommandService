@@ -4,46 +4,29 @@ import me.bbr.easycommand.annotation.Command;
 import me.bbr.easycommand.annotation.Context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+@Component
 public class CommandValidator {
 
-    private static Log LOG = LogFactory.getLog(CommandValidator.class);
+    private Log LOG = LogFactory.getLog(CommandValidator.class);
 
-    public static final String REGEX = "^\\^(.*)\\$$";
-    private static Pattern pattern = Pattern.compile(REGEX);
+    @Autowired
+    private TypeExtractor typeExtractor;
 
-    public static boolean isValid(String patternToValidate) {
-        if (patternSyntaxIsNotValid(patternToValidate)) {
-            return false;
-        }
+    public final String REGEX = "^\\^(.*)\\$$";
+    private Pattern pattern = Pattern.compile(REGEX);
 
-        return pattern.matcher(patternToValidate).find();
-    }
-
-    private static boolean patternSyntaxIsNotValid(String patternToValidate) {
-        try {
-            Pattern.compile(patternToValidate);
-        }
-        catch (PatternSyntaxException e) {
-            LOG.warn("PatternSyntaxException : " + e.getMessage());
-            return true;
-        }
-        return false;
-    }
-
-    public static int countGroup(String patternToCount) {
-        Pattern pattern = Pattern.compile(patternToCount);
-        return pattern.matcher("").groupCount();
-    }
-
-    public static boolean isValid(Method method, String pattern) {
-        if (notAuthorizeArguments(method)) {
-            LOG.warn("Only String arguments is accepted");
+    public boolean isValid(Method method, String pattern) {
+        if (notAuthorizeArguments(method, pattern)) {
+            LOG.warn("The argument and pattern doesn't match");
             return false;
         }
 
@@ -61,7 +44,7 @@ public class CommandValidator {
         return true;
     }
 
-    private static boolean contextIsNotLastPlace(Method method) {
+    private boolean contextIsNotLastPlace(Method method) {
         for (int index=0; index < method.getParameterTypes().length; index++) {
             Class c = method.getParameterTypes()[index];
             Annotation[] ann = method.getParameterAnnotations()[index];
@@ -73,7 +56,7 @@ public class CommandValidator {
         return false;
     }
 
-    private static boolean containsContextAnnotation(Annotation[] ann) {
+    private boolean containsContextAnnotation(Annotation[] ann) {
         for (Annotation annotation: ann) {
             if (annotation.annotationType().equals(Context.class)) {
                 return true;
@@ -82,7 +65,7 @@ public class CommandValidator {
         return false;
     }
 
-    private static int numberOfNonGroupParam(Method method) {
+    private int numberOfNonGroupParam(Method method) {
         int counter = 0;
         for (int i=0; i<method.getParameterTypes().length; i++) {
             Class c = method.getParameterTypes()[i];
@@ -97,7 +80,7 @@ public class CommandValidator {
         return counter;
     }
 
-    private static int addIfIsAContext(Annotation[] ann) {
+    private int addIfIsAContext(Annotation[] ann) {
         int counter = 0;
         for (Annotation annotation : ann) {
             if (annotation.annotationType().equals(Context.class)) {
@@ -107,17 +90,27 @@ public class CommandValidator {
         return counter;
     }
 
-    private static boolean notAuthorizeArguments(Method method) {
+    private boolean notAuthorizeArguments(Method method, String pattern) {
         Class<?>[] types = method.getParameterTypes();
-        for (Class c: types) {
-            if (!c.equals(String.class) && !CommandContext.class.equals(c)) {
+        List<Class> clazz = typeExtractor.extract(pattern);
+
+        for (int i=0; i<types.length && i<clazz.size(); i++) {
+            Class argument = types[i];
+            Class expected = clazz.get(i);
+
+            if (!argument.equals(expected)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean isValid(Method method) {
+    public int countGroup(String patternToCount) {
+        Pattern pattern = Pattern.compile(patternToCount);
+        return pattern.matcher("").groupCount();
+    }
+
+    public boolean isValid(Method method) {
         if (method.getReturnType() == null) {
             LOG.warn("Method invalid, cannot be void");
             return false;
@@ -130,11 +123,30 @@ public class CommandValidator {
         return true;
     }
 
-    public static boolean isValid(Command annotation) {
+    public boolean isValid(Command annotation) {
         if (!isValid(annotation.value())) {
             LOG.warn("Pattern is invalid : correct pattern is " + REGEX);
             return false;
         }
         return true;
+    }
+
+    public boolean isValid(String patternToValidate) {
+        if (patternSyntaxIsNotValid(patternToValidate)) {
+            return false;
+        }
+
+        return pattern.matcher(patternToValidate).find();
+    }
+
+    private boolean patternSyntaxIsNotValid(String patternToValidate) {
+        try {
+            Pattern.compile(patternToValidate);
+        }
+        catch (PatternSyntaxException e) {
+            LOG.warn("PatternSyntaxException : " + e.getMessage());
+            return true;
+        }
+        return false;
     }
 }

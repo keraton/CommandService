@@ -12,7 +12,17 @@ public class CommandBeanMethodTest {
     private CommandBeanMethod commandBeanMethod = getCommandBeanMethod("^I love (.*) and (.*)$");
 
     private CommandBeanMethod getCommandBeanMethod(String command) {
-        return new CommandBeanMethod(command, null, null, null);
+        class Test {
+            public String method(){
+                return null;
+            }
+        }
+        try {
+            return new CommandBeanMethod(command, Test.class.getMethod("method"), null, null);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Test(expected = PatternSyntaxException.class)
@@ -29,12 +39,6 @@ public class CommandBeanMethodTest {
     @Test
     public void should_not_match() {
         assertThat(commandBeanMethod.isMatch("I love Paris")).isEqualTo(false);
-    }
-
-    @Test
-    public void should_match_group() {
-        assertThat(commandBeanMethod
-                        .extractArguments("I love Paris and New York", null)).containsExactly("Paris", "New York");
     }
 
 }
