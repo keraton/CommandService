@@ -3,6 +3,7 @@ package me.bbr.easycommand;
 
 import me.bbr.easycommand.annotation.Command;
 import me.bbr.easycommand.annotation.Context;
+import me.bbr.easycommand.annotation.DateArgs;
 import me.bbr.easycommand.config.CommandAppConfig;
 import me.bbr.easycommand.dto.CommandBeanMethod;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,8 @@ public class EasyCommandIT {
     @Autowired
     private EasyCommand easyCommand;
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
     @Test
     public void should_scan () {
         // Given
@@ -41,9 +46,9 @@ public class EasyCommandIT {
 
     @Test
     public void should_service () {
-        String result = easyCommand.execute("I love Paris and London and number 3");
+        String result = easyCommand.execute("I love Paris and London and number 3 and date 06/03/2016");
 
-        assertThat(result).isEqualTo("Paris" + "London" + 3);
+        assertThat(result).isEqualTo("Paris" + "London" + 3 + "06/03/2016");
     }
 
     @Test
@@ -68,9 +73,12 @@ public class EasyCommandIT {
 
     static class ClassWithCommand {
 
-        @Command("^I love (\\w+) and (\\w+) and number (\\d+)$")
-        public String command(String text, String text2, Integer integer) {
-            return text + text2 +integer;
+        @Command("^I love (\\w+) and (\\w+) and number (\\d+) and date (.+)$")
+        public String command(String text,
+                              String text2,
+                              Integer integer,
+                              @DateArgs("dd/MM/yyyy") Date date) {
+            return text + text2 +integer + sdf.format(date);
         }
 
         @Command("^I love (\\w*) too$")

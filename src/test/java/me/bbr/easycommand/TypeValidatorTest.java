@@ -15,14 +15,16 @@ public class TypeValidatorTest {
     @Test
     public void should_test_behaviour () {
         // Given
-        Pattern pattern = Pattern.compile(  "(?<word>\\(\\\\w\\+\\))|"                      +
-                                            "(?<int>\\(\\\\d\\+\\))|"                       +
-                                            "(?<anything>\\(\\.\\*\\))|"                    +
-                                            "(?<decimal>\\(\\\\d\\+\\\\.\\\\d\\+\\))"
-                                         );
+        Pattern pattern =  Pattern.compile(
+                        "(?<word>\\(\\\\w\\+\\))|"                      +
+                        "(?<int>\\(\\\\d\\+\\))|"                       +
+                        "(?<anything>\\(\\.\\*\\))|"                    +
+                        "(?<anything2>\\(\\.\\+\\))|"                   +
+                        "(?<decimal>\\(\\\\d\\+\\\\.\\\\d\\+\\))"
+        );
 
         // When
-        Matcher matcher = pattern.matcher("f (.*) sdfsdf (\\w+) efg (\\d+) 30/04/2000 (\\d+\\.\\d+)");
+        Matcher matcher = pattern.matcher("f (.*) (.+) sdfsdf (\\w+) efg (\\d+) 30/04/2000 (\\d+\\.\\d+)");
 
         // Then
         while (matcher.find())

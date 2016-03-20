@@ -1,12 +1,17 @@
 package me.bbr.easycommand;
 
 import me.bbr.easycommand.annotation.Context;
+import me.bbr.easycommand.annotation.DateArgs;
 import me.bbr.easycommand.dto.CommandBeanMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,10 +19,13 @@ import java.util.regex.Pattern;
 @Component
 public class TypeExtractor {
 
+    private static Log LOG = LogFactory.getLog(TypeExtractor.class);
+
     private Pattern patternOfPattern = Pattern.compile(
                                                 "(?<word>\\(\\\\w\\+\\))|"                      +
                                                 "(?<int>\\(\\\\d\\+\\))|"                       +
                                                 "(?<anything>\\(\\.\\*\\))|"                    +
+                                                "(?<anything2>\\(\\.\\+\\))|"                   +
                                                 "(?<decimal>\\(\\\\d\\+\\\\.\\\\d\\+\\))"
                                             );
 
@@ -67,13 +75,16 @@ public class TypeExtractor {
     private List<Object> extractFromPattern(CommandBeanMethod commandBeanMethod, String text, Pattern pattern) {
         List<Class> types = this.extract(commandBeanMethod.getCommand());
         List<Object> groups = new ArrayList<>();
+        Annotation[][] annotations = commandBeanMethod.getMethod().getParameterAnnotations();
 
         Matcher matcher = pattern.matcher(text);
+
         if (matcher.matches()) {
             // No need to take the 1st match
             for(int i=1; i <= matcher.groupCount(); i++) {
                 String group = matcher.group(i);
                 Class type = getAClass(types, i);
+                Annotation[] anns = annotations[i-1];
 
                 if (Integer.class.equals(type)) {
                     groups.add(Integer.valueOf(group));
@@ -81,12 +92,36 @@ public class TypeExtractor {
                 else if (Double.class.equals(type)) {
                     groups.add(Double.valueOf(group));
                 }
+                else if (getDateArgsAnnotation(anns) != null && String.class.equals(type)) {
+                    groupAddDate(groups, group, anns);
+                }
                 else {
                     groups.add(group);
                 }
             }
         }
         return groups;
+    }
+
+    private void groupAddDate(List<Object> groups, String group, Annotation[] anns) {
+        String format = getDateArgsAnnotation(anns).value();
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        try {
+            Date date = sdf.parse(group);
+            groups.add(date);
+        } catch (ParseException e) {
+            LOG.warn("Error parse exception", e);
+            groups.add(null);
+        }
+    }
+
+    private DateArgs getDateArgsAnnotation(Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof DateArgs) {
+                return (DateArgs) annotation;
+            }
+        }
+        return null;
     }
 
     private Class getAClass(List<Class> types, int i) {

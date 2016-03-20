@@ -1,6 +1,7 @@
 package me.bbr.easycommand;
 
 import me.bbr.easycommand.annotation.Context;
+import me.bbr.easycommand.annotation.DateArgs;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -8,6 +9,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -183,6 +185,18 @@ public class CommandValidatorTest {
         assertThat(valid).isTrue();
     }
 
+    @Test
+    public void should_valid_with_date () throws NoSuchMethodException {
+        // Given
+        Method methodA = ExperimentClass.class.getMethod("methodK", Date.class);
+
+        // When
+        boolean valid = commandValidator.isValid(methodA, "^ (.+) $");
+
+        // Then
+        assertThat(valid).isTrue();
+    }
+
     // This is a very cool experiment class
     static class ExperimentClass {
 
@@ -194,6 +208,7 @@ public class CommandValidatorTest {
         public void methodG(@Context("key1") String s1) {};
         public void methodH(String s1, @Context("key1") String s2) {};
         public void methodJ(Double s1, Integer s2) {};
+        public void methodK(@DateArgs("dd/mm/YYYY") Date date) {};
 
         // Not Valid
         public void methodD(CommandContext commandContext, String s1) {};

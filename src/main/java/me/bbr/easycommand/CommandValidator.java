@@ -2,6 +2,7 @@ package me.bbr.easycommand;
 
 import me.bbr.easycommand.annotation.Command;
 import me.bbr.easycommand.annotation.Context;
+import me.bbr.easycommand.annotation.DateArgs;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -93,13 +95,28 @@ public class CommandValidator {
     private boolean notAuthorizeArguments(Method method, String pattern) {
         Class<?>[] types = method.getParameterTypes();
         List<Class> clazz = typeExtractor.extract(pattern);
+        Annotation[][] annotations = method.getParameterAnnotations();
 
         for (int i=0; i<types.length && i<clazz.size(); i++) {
             Class argument = types[i];
             Class expected = clazz.get(i);
+            Annotation[] anns = annotations[i];
 
-            if (!argument.equals(expected)) {
+            if (!argument.equals(expected) && !isDateArgs(argument, anns)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isDateArgs(Class argument, Annotation[] anns) {
+        if (anns != null) {
+            for (Annotation ann : anns) {
+                if (ann instanceof DateArgs
+                        && argument.equals(Date.class)
+                        ) {
+                    return true;
+                }
             }
         }
         return false;

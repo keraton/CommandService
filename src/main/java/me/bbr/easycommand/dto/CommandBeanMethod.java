@@ -49,7 +49,6 @@ public class CommandBeanMethod {
         return matcher.matches();
     }
 
-
     public boolean isContainsCommandContext() {
         Class<?>[] types = method.getParameterTypes();
         for(Class clazz : types) {
