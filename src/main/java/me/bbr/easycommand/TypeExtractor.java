@@ -7,7 +7,6 @@ import me.bbr.easycommand.dto.PatternType;
 import me.bbr.easycommand.dto.PatternTypeCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -26,14 +25,14 @@ public class TypeExtractor {
     private static Log LOG = LogFactory.getLog(TypeExtractor.class);
 
 
-    private Pattern patternOfPattern = Pattern.compile(PatternTypeCollection.getAllPattern() + "|\\(.*\\)");
+    private static Pattern patternForGroup = Pattern.compile("(\\([^\\)]*)");
 
 
     public List<Class> extract(String pattern) {
-        Matcher matcher = patternOfPattern.matcher(pattern);
+        Matcher matcher = patternForGroup.matcher(pattern);
         List<Class> classes = new ArrayList<>();
         while(matcher.find()) {
-            String group = matcher.group();
+            String group = matcher.group() + ")";
             List<Class> collect = PatternTypeCollection.getPatternList().stream()
                     .map(patternType -> getClassFromPattern(group, patternType))
                     .filter(c -> c != null)
@@ -102,6 +101,9 @@ public class TypeExtractor {
                 }
                 else if (Double.class.equals(type)) {
                     groups.add(Double.valueOf(group));
+                }
+                else if (Boolean.class.equals(type)) {
+                    groups.add(Boolean.valueOf(group));
                 }
                 else if (getDateArgsAnnotation(anns) != null && String.class.equals(type)) {
                     groupAddDate(groups, group, anns);

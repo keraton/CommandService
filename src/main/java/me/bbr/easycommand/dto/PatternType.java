@@ -27,10 +27,6 @@ public class PatternType {
         patterns.addAll(synonymPattern);
     }
 
-    public String getMainPattern() {
-        return mainPattern;
-    }
-
     public String replaceSynonymWithMain(String text) {
         String returnedPattern = text;
         for (String pattern: synonymPatterns) {
@@ -46,12 +42,9 @@ public class PatternType {
     }
 
     public static PatternType aPatternType(Class clazz, String mainPattern, String... synonymPatterns) {
-        return new PatternType(clazz, mainPattern, Arrays.<String>asList((String[]) synonymPatterns));
+        return new PatternType(clazz, mainPattern, Arrays.asList((String[]) synonymPatterns));
     }
 
-    public List<String> getSynonymPatterns() {
-        return synonymPatterns;
-    }
 
     public String getFormattedPatterns() {
         return  join("|", patterns.stream()

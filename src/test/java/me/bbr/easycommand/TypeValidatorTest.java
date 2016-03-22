@@ -14,24 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TypeValidatorTest {
 
     @Test
-    public void should_test_behaviour () {
-        // Given
-        Pattern patternOfPattern = Pattern.compile(PatternTypeCollection.getAllPattern() +
-                "|(\\(\\.\\*\\))"                    +
-                "|(\\(\\.\\+\\))");
-
-        // When
-        Matcher matcher = patternOfPattern.matcher("^f (.*) (.+) sdfsdf (\\w+) " +
-                                            "efg (\\d+) 30/04/2000 (\\d+\\.\\d+) " +
-                                            " (WORD) (INT) (DOUBLE)$");
-
-        // Then
-        while (matcher.find())
-            System.out.println(matcher.group());
-
-    }
-
-    @Test
     public void should_extract_nothing () {
         // Given
         TypeExtractor typeExtractor = new TypeExtractor();
