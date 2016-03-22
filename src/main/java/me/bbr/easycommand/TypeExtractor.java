@@ -3,8 +3,11 @@ package me.bbr.easycommand;
 import me.bbr.easycommand.annotation.Context;
 import me.bbr.easycommand.annotation.DateArgs;
 import me.bbr.easycommand.dto.CommandBeanMethod;
+import me.bbr.easycommand.dto.PatternType;
+import me.bbr.easycommand.dto.PatternTypeCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -15,36 +18,44 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class TypeExtractor {
 
     private static Log LOG = LogFactory.getLog(TypeExtractor.class);
 
-    private Pattern patternOfPattern = Pattern.compile(
-                                                "(?<word>\\(\\\\w\\+\\))|"                      +
-                                                "(?<int>\\(\\\\d\\+\\))|"                       +
-                                                "(?<anything>\\(\\.\\*\\))|"                    +
-                                                "(?<anything2>\\(\\.\\+\\))|"                   +
-                                                "(?<decimal>\\(\\\\d\\+\\\\.\\\\d\\+\\))"
-                                            );
+
+    private Pattern patternOfPattern = Pattern.compile(PatternTypeCollection.getAllPattern() + "|\\(.*\\)");
+
 
     public List<Class> extract(String pattern) {
         Matcher matcher = patternOfPattern.matcher(pattern);
         List<Class> classes = new ArrayList<>();
         while(matcher.find()) {
             String group = matcher.group();
-            if ("(\\d+)".equals(group)) {
-                classes.add(Integer.class);
-            }
-            else if ("(\\d+\\.\\d+)".equals(group)) {
-                classes.add(Double.class);
+            List<Class> collect = PatternTypeCollection.getPatternList().stream()
+                    .map(patternType -> getClassFromPattern(group, patternType))
+                    .filter(c -> c != null)
+                    .collect(Collectors.toList());
+
+            if (collect.isEmpty()) {
+                classes.add(String.class);
             }
             else {
-                classes.add(String.class);
+                classes.addAll(collect);
             }
         }
         return classes;
+    }
+
+    private Class getClassFromPattern(String group, PatternType patternType) {
+        for (String stringPattern : patternType.getAllPattern()){
+            if (stringPattern.equals(group)) {
+                return patternType.getClazz();
+            }
+        }
+        return null;
     }
 
     public List<Object> extractArguments(CommandBeanMethod commandBeanMethod, String text, CommandContext commandContext) {

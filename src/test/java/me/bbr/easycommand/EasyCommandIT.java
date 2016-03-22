@@ -46,9 +46,9 @@ public class EasyCommandIT {
 
     @Test
     public void should_service () {
-        String result = easyCommand.execute("I love Paris and London and number 3 and date 06/03/2016");
+        String result = easyCommand.execute("I love Paris and London and number 3 1.0 and date 06/03/2016");
 
-        assertThat(result).isEqualTo("Paris" + "London" + 3 + "06/03/2016");
+        assertThat(result).isEqualTo("Paris" + "London" + 3 + ""+ 1.0+ "06/03/2016");
     }
 
     @Test
@@ -73,12 +73,13 @@ public class EasyCommandIT {
 
     static class ClassWithCommand {
 
-        @Command("^I love (\\w+) and (\\w+) and number (\\d+) and date (.+)$")
+        @Command("^I love (\\w+) and (\\w+) and number (\\d+) (DOUBLE) and date (.+)$")
         public String command(String text,
                               String text2,
                               Integer integer,
+                              Double doubles,
                               @DateArgs("dd/MM/yyyy") Date date) {
-            return text + text2 +integer + sdf.format(date);
+            return text + text2 +integer + doubles + sdf.format(date);
         }
 
         @Command("^I love (\\w*) too$")

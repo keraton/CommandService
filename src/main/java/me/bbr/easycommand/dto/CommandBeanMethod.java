@@ -1,12 +1,8 @@
 package me.bbr.easycommand.dto;
 
 import me.bbr.easycommand.CommandContext;
-import me.bbr.easycommand.annotation.Context;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,10 +18,10 @@ public class CommandBeanMethod {
 
     public CommandBeanMethod(String command, Method method, String beanName, Class type) {
         this.method = method;
-        this.command = command;
+        this.command = PatternTypeCollection.replaceWithMainPattern(command);
         this.beanName = beanName;
         this.type = type;
-        this.pattern = compile(command);
+        this.pattern = compile(this.command);
     }
 
     public Method getMethod() {

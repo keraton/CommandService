@@ -1,5 +1,6 @@
 package me.bbr.easycommand;
 
+import me.bbr.easycommand.dto.PatternTypeCollection;
 import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,16 +16,14 @@ public class TypeValidatorTest {
     @Test
     public void should_test_behaviour () {
         // Given
-        Pattern pattern =  Pattern.compile(
-                        "(?<word>\\(\\\\w\\+\\))|"                      +
-                        "(?<int>\\(\\\\d\\+\\))|"                       +
-                        "(?<anything>\\(\\.\\*\\))|"                    +
-                        "(?<anything2>\\(\\.\\+\\))|"                   +
-                        "(?<decimal>\\(\\\\d\\+\\\\.\\\\d\\+\\))"
-        );
+        Pattern patternOfPattern = Pattern.compile(PatternTypeCollection.getAllPattern() +
+                "|(\\(\\.\\*\\))"                    +
+                "|(\\(\\.\\+\\))");
 
         // When
-        Matcher matcher = pattern.matcher("f (.*) (.+) sdfsdf (\\w+) efg (\\d+) 30/04/2000 (\\d+\\.\\d+)");
+        Matcher matcher = patternOfPattern.matcher("^f (.*) (.+) sdfsdf (\\w+) " +
+                                            "efg (\\d+) 30/04/2000 (\\d+\\.\\d+) " +
+                                            " (WORD) (INT) (DOUBLE)$");
 
         // Then
         while (matcher.find())
