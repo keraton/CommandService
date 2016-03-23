@@ -21,7 +21,7 @@ public class EasyCommand {
     private static Log LOG = LogFactory.getLog(EasyCommand.class);
 
     @Autowired
-    private ApplicationContext ctx;
+    private ConfigurableListableBeanFactory configurable;
 
     @Autowired
     private CommandRepo commandRepo;
@@ -73,7 +73,6 @@ public class EasyCommand {
         String beanName = commandBeanMethod.getBeanName();
         Class type = commandBeanMethod.getType();
 
-        ConfigurableListableBeanFactory configurable = ((AbstractApplicationContext) ctx).getBeanFactory();
         return configurable.getBean(beanName, type);
     }
 }
