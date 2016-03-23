@@ -35,14 +35,6 @@ public class EasyCommandIT {
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-    @Test
-    public void should_scan () {
-        // Given
-        List<CommandBeanMethod> commandBeanMethods = scanner.commandBeanMethods;
-
-        // Then
-        assertThat(commandBeanMethods).hasSize(3);
-    }
 
     @Test
     public void should_service () {

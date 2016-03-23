@@ -11,7 +11,7 @@ public class CommandRepo {
 
     private List<CommandBeanMethod> commandBeanMethods = new ArrayList<>();
 
-    public void save(List<CommandBeanMethod> commandBeanMethods) {
+    public void addAll(List<CommandBeanMethod> commandBeanMethods) {
         this.commandBeanMethods.addAll(commandBeanMethods);
     }
 
