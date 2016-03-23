@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.String.join;
-
 public class PatternType {
 
     private final String mainPattern;
@@ -41,37 +39,11 @@ public class PatternType {
         return clazz;
     }
 
-    public static PatternType aPatternType(Class clazz, String mainPattern, String... synonymPatterns) {
-        return new PatternType(clazz, mainPattern, Arrays.asList((String[]) synonymPatterns));
-    }
-
-
-    public String getFormattedPatterns() {
-        return  join("|", patterns.stream()
-                                .map(this::betweenParenthesis)
-                                .toArray(size -> new String [size]));
-
-
-    }
-
-    private String betweenParenthesis(String mainPattern) {
-        return "(" + addEscapeChars(mainPattern) + ")";
-    }
-
-    private String addEscapeChars(String mainPattern) {
-        return mainPattern
-                    .replaceAll("\\\\","\\\\\\\\")
-                    .replaceAll("\\.\\+", "\\\\.\\+")
-                    .replaceAll("\\+", "\\\\+")
-                    .replaceAll("\\.\\*", "\\\\.\\\\*")
-                    .replaceAll("\\(", "\\\\(")
-                    .replaceAll("\\)", "\\\\)")
-                    .replaceAll("\\\\\\.", "\\\\.")
-                    .replaceAll("\\|", "\\\\|")
-                ;
-    }
-
     public List<String>  getAllPattern() {
         return patterns;
+    }
+
+    public static PatternType aPatternType(Class clazz, String mainPattern, String... synonymPatterns) {
+        return new PatternType(clazz, mainPattern, Arrays.asList((String[]) synonymPatterns));
     }
 }
